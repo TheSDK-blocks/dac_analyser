@@ -85,30 +85,30 @@ class dac_analyser(thesdk):
         lsb_array = np.linspace(np.min(signal),np.max(signal),
                 num=len(signal),endpoint=True)
         lsb_step = np.diff(lsb_array)[0]
-        inl = (signal-lsb_array)/lsb_step
-        inl_max = np.max(np.abs(inl))
-        dnl = np.diff(signal)/lsb_step - 1
-        dnl_max = np.max(np.abs(dnl))
+        self.inl = (signal-lsb_array)/lsb_step
+        self.inl_max = np.max(np.abs(self.inl))
+        self.dnl = np.diff(signal)/lsb_step - 1
+        self.dnl_max = np.max(np.abs(self.dnl))
 
-        # Plot inl:
+        # Plot self.inl:
         code = np.arange(0,len(signal))
         text = ''
         if self.plot:
             plt.figure()
-            plt.plot(code,inl)
+            plt.plot(code,self.inl)
             plt.xlabel(self.xlabel)
             plt.ylabel(self.ylabel)
-            if self.sciformat and inl_max < 0.01:
-                text+='Max INL = {:.2e}\n'.format(inl_max)
-                text+='Max DNL = {:.2e}'.format(dnl_max)
-                self.print_log(type='I',msg=f'Maximun INL is {inl_max}')
-                self.print_log(type='I',msg=f'Maximun DNL is {dnl_max}')
+            if self.sciformat and self.inl_max < 0.01:
+                text+='Max INL = {:.2e}\n'.format(self.inl_max)
+                text+='Max DNL = {:.2e}'.format(self.dnl_max)
+                self.print_log(type='I',msg=f'Maximun INL is {self.inl_max}')
+                self.print_log(type='I',msg=f'Maximun DNL is {self.dnl_max}')
                 plt.gca().yaxis.set_major_formatter(mtick.FormatStrFormatter('%.0e'))
             else:
-                text+='Max INL = {:.4f}\n'.format(inl_max)
-                text+='Max DNL = {:.4f}'.format(dnl_max)
-                self.print_log(type='I',msg=f'Maximun INL is {inl_max}')
-                self.print_log(type='I',msg=f'Maximun DNL is {dnl_max}')
+                text+='Max INL = {:.4f}\n'.format(self.inl_max)
+                text+='Max DNL = {:.4f}'.format(self.dnl_max)
+                self.print_log(type='I',msg=f'Maximun INL is {self.inl_max}')
+                self.print_log(type='I',msg=f'Maximun DNL is {self.dnl_max}')
             if self.annotate:
                 plt.text(0.025,0.975,text,usetex=plt.rcParams['text.usetex'],
                         horizontalalignment='left',verticalalignment='top',
@@ -116,13 +116,10 @@ class dac_analyser(thesdk):
                         fontweight='normal',transform=plt.gca().transAxes,
                         bbox=dict(boxstyle='square,pad=0',fc='#ffffffa0',ec='none'))
             if self.set_ylim:
-                plt.ylim((-1.5*inl_max,1.5*inl_max))
+                plt.ylim((-1.5*self.inl_max,1.5*self.inl_max))
             if len(code) < 10:
                 plt.xticks(np.arange(np.min(code),np.max(code)+1,1.0))
             plt.show(block=False)
-            return inl, dnl
-        else:
-            return inl, dnl
 
 
     def run(self,*arg):
