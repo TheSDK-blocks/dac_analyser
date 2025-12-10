@@ -39,6 +39,18 @@ class dac_analyser(thesdk):
         Change the y-axis and annotation values to scientific format (e.g. 1e-02)
     set_ylim : bool, default True
         Set the ylimits of the curve to -1.5LSB - 1.5LSB
+    export : (bool,str), default (False,'')
+        Should the figure(s) be exported to pdf or not? 
+        The filetype .pdf is automatically
+        appended to the 'filepath/filename' -string given.
+
+        For example::
+
+            export = (True,'./figures/result')
+
+        would create 'result.pdf'
+        in the directory called 'figures'.
+
     """
     @property
     def _classfile(self):
@@ -55,6 +67,7 @@ class dac_analyser(thesdk):
         self.sciformat = True
         self.set_ylim = True
         self.plot = True
+        self.export=(False,'')
 
         self.IOS=Bundle()
         self.IOS.Members['in']=IO()
@@ -93,7 +106,7 @@ class dac_analyser(thesdk):
         # Plot self.inl:
         code = np.arange(0,len(signal))
         text = ''
-        if self.plot:
+        if self.plot or self.export[0]:
             plt.figure()
             plt.plot(code,self.inl)
             plt.xlabel(self.xlabel)
@@ -119,7 +132,10 @@ class dac_analyser(thesdk):
                 plt.ylim((-1.5*self.inl_max,1.5*self.inl_max))
             if len(code) < 10:
                 plt.xticks(np.arange(np.min(code),np.max(code)+1,1.0))
-            plt.show(block=False)
+            if self.plot:
+                plt.show(block=False)
+            if self.export[0]:
+                plt.savefig(f'{self.export[1]}.pdf',format='pdf')
 
 
     def run(self,*arg):
